@@ -7,19 +7,33 @@ CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   firstname VARCHAR(64) NOT NULL CHECK(firstname != ''),
   lastname VARCHAR(64) NOT NULL CHECK(lastname != ''),
-  email VARCHAR(256) NOT NULL UNIQUE CHECK(email != ''),
+  email VARCHAR(256) NOT NULL CHECK(email != ''),
   is_male BOOLEAN NOT NULL,
   birthday DATE NOT NULL CHECK(birthday < CURRENT_DATE),
   height NUMERIC(3, 2) NOT NULL CHECK(height > 0.2 AND height < 3)
 );
+
 /* */
+ALTER TABLE "users"
+ADD UNIQUE("email");
+/* */
+ALTER TABLE "users"
+ADD CONSTRAINT "custom_check" CHECK("height" > 0.5);
+/* */
+ALTER TABLE "users" DROP CONSTRAINT "custom_check";
+/* */
+
+ALTER TABLE "users" 
+ADD "weight" NUMERIC(5,2) NOT NULL CHECK("weight" > 0 AND "weight" < 500);
+
 INSERT INTO users (
   firstname,
   lastname,
   email,
   is_male,
   birthday,
-  height
+  height,
+  weight
   )
 VALUES (
   'Test',
@@ -27,7 +41,8 @@ VALUES (
   'test1@mail.com',
   TRUE,
   '1980-01-01',
-  2
+  2,
+  15
 ),
 (
   'Test',
@@ -35,7 +50,8 @@ VALUES (
   'test2@mail.com',
   TRUE,
   '1980-01-01',
-  1.5
+  1.5,
+  150
 ),
 (
   'Test',
@@ -43,7 +59,8 @@ VALUES (
   'test3@mail.com',
   TRUE,
   '1980-01-01',
-  1
+  1,
+  200
 );
 
  /* */
@@ -93,7 +110,7 @@ CREATE TABLE "products_to_orders" (
  users_to_chats
  */
 /* */
-DROP TABLE IF EXISTS "chats";
+DROP TABLE IF EXISTS "chats" CASCADE;
 /* */
 CREATE TABLE "chats" (
   "id" BIGSERIAL PRIMARY KEY,
@@ -101,6 +118,8 @@ CREATE TABLE "chats" (
   "name" VARCHAR(64) NOT NULL CHECK("name" !=''),
   "description" VARCHAR (512) CHECK("description" !='')
 );
+/* */
+DROP TABLE IF EXISTS "users_to_chats" CASCADE;
 /* */
 CREATE TABLE "users_to_chats" (
   "chat_id" BIGINT REFERENCES "chats" ("id"),
@@ -126,6 +145,7 @@ CREATE TABLE "messages" (
   КОНТЕНТ: имя, описание,
   РЕАКЦИИ: isLiked
 */
+DROP TABLE "content" CASCADE;
 CREATE TABLE "content" (
   "id" SERIAL PRIMARY KEY,
   "owner_id" INTEGER NOT NULL REFERENCES "users" ("id"),
@@ -133,10 +153,13 @@ CREATE TABLE "content" (
   "description" TEXT
 );
 /* */
+DROP TABLE "reactions";
 CREATE TABLE "reactions" (
   "content_id" INTEGER REFERENCES "content" ("id"),
   "user_id" INTEGER REFERENCES "users" ("id"),
   "is_liked" BOOLEAN,
   PRIMARY KEY ("content_id", "user_id")
 );
+
+
 
