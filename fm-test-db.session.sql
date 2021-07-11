@@ -126,5 +126,17 @@ CREATE TABLE "messages" (
   КОНТЕНТ: имя, описание,
   РЕАКЦИИ: isLiked
 */
-
+CREATE TABLE "content" (
+  "id" SERIAL PRIMARY KEY,
+  "owner_id" INTEGER NOT NULL REFERENCES "users" ("id"),
+  "name" VARCHAR(255) NOT NULL CHECK("name" !=''),
+  "description" TEXT
+);
+/* */
+CREATE TABLE "reactions" (
+  "content_id" INTEGER REFERENCES "content" ("id"),
+  "user_id" INTEGER REFERENCES "users" ("id"),
+  "is_liked" BOOLEAN,
+  PRIMARY KEY ("content_id", "user_id")
+);
 
