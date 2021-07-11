@@ -161,5 +161,18 @@ CREATE TABLE "reactions" (
   PRIMARY KEY ("content_id", "user_id")
 );
 
+/*1:1*/
+CREATE TABLE "coach" (
+  "id" SERIAL PRIMARY KEY,
+  "name" VARCHAR(128)
+);
+CREATE TABLE "teams" (
+  "id" SERIAL PRIMARY KEY,
+  "name" VARCHAR(128),
+  "coach_id" INTEGER NOT NULL REFERENCES "coach"("id") 
+);
+ALTER TABLE "coach" 
+ADD COLUMN "team_id" INTEGER REFERENCES "teams"("id");
+
 
 
