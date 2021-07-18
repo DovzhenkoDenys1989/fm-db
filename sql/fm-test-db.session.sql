@@ -229,7 +229,8 @@ WHERE "id" = 2000;
 SELECT * FROM "users"
 WHERE "id" = 2000;
 /* */
-DELETE FROM "users" WHERE "id" = 2099
+DELETE FROM "users" 
+WHERE "id" = 2099
 RETURNING *;
 /*
  1. get all men
@@ -342,3 +343,89 @@ SELECT "is_male",
 FROM "users"
 GROUP BY "is_male";
 
+/* 
+ минимальный рост мужчин и женщин
+ минимальный, максимальный и средний рост мужчины и женщины
+ Кол-во людей родившихся 1 января 1970 года
+ Кол-во людей с определённым именем -> John | *
+ Кол-во мужчин и женщин в возрасте от 20 до 30 лет
+ */
+
+ SELECT "is_male",
+ MIN("height") AS "min_height"
+ FROM "users"
+ GROUP BY "is_male";
+ /* */
+ SELECT "is_male",
+ MIN("height") AS "min_height",
+ MAX("height") AS "max_height",
+ AVG("height") AS "avg_height"
+ FROM "users"
+ GROUP BY "is_male";
+ /* */
+ SELECT COUNT("id") AS "count_people"
+ FROM "users"
+ WHERE "birthday" = '1970-01-01';
+ /* */
+ SELECT COUNT("id") AS "count_people"
+ FROM "users"
+ WHERE "firstname" = 'John';
+ /* */
+ SELECT "is_male",
+ COUNT("id") AS "count_people"
+ FROM "users"
+ WHERE AGE("birthday") BETWEEN MAKE_INTERVAL(20) AND MAKE_INTERVAL(30)
+ GROUP BY "is_male";
+
+/* */
+ SELECT "firstname", COUNT("id") AS "count_people"
+ FROM "users"
+ WHERE "firstname" IN ('Sophia', 'Don', 'Arno', 'Katarina')
+ GROUP BY "firstname";
+/* */
+ SELECT "firstname", 
+  COUNT("id") AS "count_people"
+ FROM "users"
+ GROUP BY "firstname"
+ ORDER BY "count_people" DESC, "firstname" ASC
+ LIMIT 10;
+ /* */
+/* */
+ SELECT * 
+ FROM "users"
+ ORDER BY "firstname" ASC;
+ /*
+ 1. Отсортировать юзеров 
+ по дню рождения в порядке убывания, 
+ по весу в порядке возрастания,
+ по росту в порядке убывания.
+ 
+ 2. Отсортировать по фамилии, имени в алфавитном порядке
+ по id в порядке убывания
+ 
+ 3. Выберите Fullname юзеров, их email и день рождения
+ Отсортируйте юзеров по email length в порядке возрастания
+ 
+ 4. Посчитайте средний вес среди женщин и мужчин с ростом более 2-х метров
+ */
+
+ SELECT *
+ FROM "users"
+ ORDER BY "birthday" DESC, "weight", "height" DESC;
+ /* */
+ SELECT "lastname", "firstname", "id"
+ FROM "users"
+ ORDER BY "lastname", "firstname", "id" DESC;
+ /* */
+ SELECT CONCAT("firstname", ' ', "lastname") AS "fullname",
+  "email",
+  "birthday"
+ FROM "users"
+ ORDER BY LENGTH("email");
+ /* */
+ SELECT "is_male",
+ AVG("weight") AS "average_weight"
+ FROM "users"
+ WHERE "height" > 2
+ GROUP BY "is_male"
+ ORDER BY "average_weight";
