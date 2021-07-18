@@ -313,3 +313,32 @@ SELECT *,
   CONCAT("firstname", ' ', "lastname") AS "fullname"
 FROM "users"
 WHERE LENGTH(CONCAT("firstname", ' ', "lastname")) > 15;
+
+/*
+   Функциии агрегации
+   
+   min - вернет минимальное значение
+   max - максимальное
+   sum - сумма значений
+   count - подсчет кол-ва записей
+   avg - среднее значение
+   */
+
+SELECT COUNT("id")
+FROM "users";
+/* */
+SELECT AVG("height") AS "avg_height", 
+  AVG("weight") AS "avg_weight"
+FROM "users";
+/* */
+SELECT SUM("weight") AS "total_weight"
+FROM "users";
+/* */
+SELECT "is_male",
+  AVG("height") AS "avg_height",
+  MAX("height") AS "max_height",
+  MIN("weight") AS "min_weight",
+  COUNT("id") AS "rows_count"
+FROM "users"
+GROUP BY "is_male";
+
