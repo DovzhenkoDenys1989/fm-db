@@ -23,11 +23,20 @@ class User {
 
   static async bulkCreate (users) {
     return await this._client.query(
-      `INSERT INTO "users" ("firstname", "lastname", "email", "is_male", "birthday")
+      `INSERT INTO "${this._tableName}" ("firstname", "lastname", "email", "is_male", "birthday")
       VALUES ${extractUsers(users)}
       `
     );
   }
+  static async deleteById (id) {
+    return await this._client.query(
+      `DELETE FROM "${this._tableName}"
+       WHERE "id" = ${id}
+       RETURNING *;
+      `
+    );
+  }
+
 }
 
 module.exports = User;
