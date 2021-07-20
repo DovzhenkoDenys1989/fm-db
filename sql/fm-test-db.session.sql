@@ -488,3 +488,127 @@ WHERE "firstname" ~ '.*i{2}.*'
 
 SELECT "firstname" FROM "users"
 WHERE "firstname" ~ 'M.*e{2}.*n';
+/* */
+DROP TABLE IF EXISTS A;
+DROP TABLE IF EXISTS B;
+CREATE TABLE A(v CHAR(3), t INT);
+CREATE TABLE B(v CHAR(3));
+INSERT INTO A
+VALUES ('XXX', 1),
+  ('ZXX', 2),
+  ('XXY', 1),
+  ('ZXY', 2),
+  ('XXZ', 1),
+  ('ZXZ', 2),
+  ('XYX', 3),
+  ('XYY', 3),
+  ('XYZ', 3),
+  ('YXZ', 4),
+  ('YXX', 4),
+  ('YXY', 4),
+  ('YYY', 5);
+INSERT INTO B
+VALUES ('ABC'),
+  ('ZXZ'),
+  ('YXZ'),
+  ('YXY'),
+  ('XXX');
+  /* Декартово произведение */
+SELECT *
+FROM A,
+  B;
+  /* Объединение. Все уникальные значения из 2-х таблиц */
+SELECT v
+FROM A
+UNION
+SELECT v
+FROM B;
+/* Пересечение. Совпадающие значения */
+SELECT v
+FROM A
+INTERSECT
+SELECT v
+FROM B;
+/* Вычитание. Значения из таблицы A, которых нет в таблице B*/
+SELECT v
+FROM A
+EXCEPT
+SELECT v
+FROM B;
+/* Узнать id юзеров, которые не делали заказы */
+SELECT id
+FROM "users"
+EXCEPT
+SELECT "userId"
+FROM "orders"
+ /* Все заказы одного юзера */
+SELECT o.id AS "orderId",
+  u.*
+FROM users AS u
+  JOIN orders AS o ON u.id = o."userId"
+WHERE u.id = 8;
+/* */
+SELECT *
+FROM A
+  JOIN B ON A.v = B.v
+  JOIN phones AS p ON A.t = p.id;
+/* Все заказы Samsung */
+SELECT o.id,
+  o."createdAt",
+  p.brand
+FROM orders AS o
+  JOIN phones_to_orders AS pto ON o.id = pto."orderId"
+  JOIN phones AS p ON p.id = pto."phoneId"
+WHERE p.brand = 'Samsung'
+/*
+   Выбрать из таблицы orders поля id, createdAt,
+   подсчитать общее количество устройств в заказе
+   */
+  /*
+   SELECT o.id, o."createdAt" FROM orders AS o;
+   SELECT "orderId", SUM("quantity") FROM phones_to_orders
+   GROUP BY "orderId";
+   */
+SELECT o.id,
+  o."createdAt",
+  SUM("quantity") AS "Total quantity"
+FROM orders AS o
+  JOIN phones_to_orders AS pto ON o.id = pto."orderId"
+GROUP BY o.id,
+  o."createdAt";
+/* 
+ Выбрать все телефоны, которые покупают 
+ и посчитать общее кол-во продаж по каждому телефону 
+ */
+SELECT p.id,
+  p.brand,
+  p.model,
+  SUM(pto."quantity") AS "Total Sold"
+FROM phones AS p
+  JOIN phones_to_orders AS pto ON p.id = pto."phoneId"
+GROUP BY p.id,
+  p.brand,
+  p.model
+ORDER BY "Total Sold" DESC;
+/* Выбрать юзеров и посчитать кол-во заказов по каждому */
+SELECT u.id,
+  u.firstname,
+  u.lastname,
+  u.email,
+  COUNT(o.id) AS "ordersAmount"
+FROM users AS u
+  LEFT JOIN orders AS o ON u.id = o."userId"
+GROUP BY u.id,
+  u.firstname,
+  u.lastname,
+  u.email;
+/* */
+/* email пользователей, которые делали заказы
+ бренда Honor
+ */
+ SELECT u.email, p.brand FROM users u
+ JOIN orders o ON o."userId" = u.id
+ JOIN phones_to_orders pto ON pto."orderId" = o.id
+ JOIN phones p ON p.id = pto."phoneId"
+ WHERE p.brand ILIKE 'honor'
+ GROUP BY u.email, p.brand;
