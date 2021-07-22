@@ -9,6 +9,16 @@
       "database": "fm_example",
       "username": "postgres",
       "password": "19sep1959"
+    },
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "fm_norma",
+      "database": "fm_norma",
+      "username": "postgres",
+      "password": "19sep1959"
     }
   ]
 }
