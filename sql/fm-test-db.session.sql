@@ -612,3 +612,8 @@ GROUP BY u.id,
  JOIN phones p ON p.id = pto."phoneId"
  WHERE p.brand ILIKE 'honor'
  GROUP BY u.email, p.brand;
+
+INSERT INTO "phones" ("brand", "model", "price", "quantity")
+   VALUES ('test', 'T1', 15000, 100),
+  ('test', 'T2', 25000, 200),
+  ('test', 'T3', 35000, 300);
